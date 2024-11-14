@@ -384,7 +384,6 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
->>>>>>> 4a74bfd (Initial commit)
 ],
   "bytecode": "0x...",
   "deployedBytecode": "0x...",
