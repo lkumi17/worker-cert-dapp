@@ -192,7 +192,6 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-=======
   "abi": [
 	{
 		"inputs": [
