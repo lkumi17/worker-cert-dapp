@@ -32,8 +32,8 @@ const CertificationCheckApp = () => {
 
     const checkCertification = async () => {
         try {
-            const result = await contract.methods.checkCertification(workerIdCheck, taskIdCheck).call({ from: account });
-            setIsCertified(result);
+            await contract.methods.checkCertification(workerIdCheck, taskIdCheck).send({ from: account });
+            setIsCertified(true);
         } catch (error) {
             console.error("Error checking certification:", error);
             setIsCertified(false);
@@ -48,6 +48,8 @@ const CertificationCheckApp = () => {
                 certificationType: result.certificationType,
                 certificationValid: result.certificationValid,
                 trainingCompleted: result.trainingCompleted,
+                certificateDocument: result.certificateDocument,
+                certificationExpiry: new Date(result.certificationExpiry * 1000).toLocaleString(),
             });
         } catch (error) {
             console.error("Error querying worker data:", error);
@@ -77,6 +79,8 @@ const CertificationCheckApp = () => {
                     <p><strong>Certification Type:</strong> {queriedWorker.certificationType}</p>
                     <p><strong>Certification Valid:</strong> {queriedWorker.certificationValid ? 'Yes' : 'No'}</p>
                     <p><strong>Training Completed:</strong> {queriedWorker.trainingCompleted ? 'Yes' : 'No'}</p>
+                    <p><strong>Certificate Document:</strong> <a href={queriedWorker.certificateDocument} target="_blank" rel="noopener noreferrer">View Certificate</a></p>
+                    <p><strong>Certification Expiry:</strong> {queriedWorker.certificationExpiry}</p>
                 </div>
             )}
         </div>
