@@ -88,12 +88,60 @@
 				"internalType": "bool",
 				"name": "_trainingCompleted",
 				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_certificateDocument",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_certificationExpiry",
+				"type": "uint256"
 			}
 		],
 		"name": "registerWorker",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "workerId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "taskId",
+				"type": "string"
+			}
+		],
+		"name": "TaskAuthorized",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "workerId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "WorkerRegistered",
+		"type": "event"
 	},
 	{
 		"inputs": [
@@ -148,6 +196,16 @@
 				"internalType": "bool",
 				"name": "trainingCompleted",
 				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "certificateDocument",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "certificationExpiry",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -187,6 +245,16 @@
 				"internalType": "bool",
 				"name": "trainingCompleted",
 				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "certificateDocument",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "certificationExpiry",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -201,7 +269,7 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x9bC49baD739F2B30A435CbF0FC01cde543cd48E1",
+      "address": "0xCF1f45254f2e2534ad032372bD93A84148AA2F56",
       "transactionHash": "0x..."
     }
   },
