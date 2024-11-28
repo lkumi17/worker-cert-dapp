@@ -1,0 +1,24 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+}
+
+/* Optional: Styles for specific components */
+.App-link {
+    color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
