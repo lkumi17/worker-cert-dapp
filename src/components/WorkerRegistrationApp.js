@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import WorkerCertificationContract from '../contracts/WorkerCertification.json';
+import { create } from 'ipfs-http-client';
 
 const WorkerRegistrationApp = () => {
     const [account, setAccount] = useState('');
@@ -10,11 +11,20 @@ const WorkerRegistrationApp = () => {
     const [certificationType, setCertificationType] = useState('');
     const [certificationValid, setCertificationValid] = useState(false);
     const [trainingCompleted, setTrainingCompleted] = useState(false);
+    const [certificateDocument, setCertificateDocument] = useState('');
+    const [certificationExpiry, setCertificationExpiry] = useState('');
     const [workerIdAuthorize, setWorkerIdAuthorize] = useState('');
     const [taskId, setTaskId] = useState('');
+    const [ipfs, setIpfs] = useState(null);
 
     useEffect(() => {
         loadBlockchainData();
+        const client = create({
+            host: 'ipfs.infura.io',
+            port: 5001,
+            protocol: 'https'
+        });
+        setIpfs(client);
     }, []);
 
     const loadBlockchainData = async () => {
@@ -31,10 +41,25 @@ const WorkerRegistrationApp = () => {
         setContract(contractInstance);
     };
 
+    const uploadToIpfs = async (file) => {
+        try {
+            const added = await ipfs.add(file);
+            return `https://ipfs.infura.io/ipfs/${added.path}`;
+        } catch (error) {
+            console.error("Error uploading file to IPFS:", error);
+            throw error;
+        }
+    };
+
     const registerWorker = async () => {
         try {
+            let certificateUrl = certificateDocument;
+            if (certificateDocument instanceof File) {
+                certificateUrl = await uploadToIpfs(certificateDocument);
+            }
+            const expiryTimestamp = Math.floor(new Date(certificationExpiry).getTime() / 1000);
             await contract.methods
-                .registerWorker(workerId, workerName, certificationType, certificationValid, trainingCompleted)
+                .registerWorker(workerId, workerName, certificationType, certificationValid, trainingCompleted, certificateUrl, expiryTimestamp)
                 .send({ from: account, gas: 3000000 });
             alert("Worker Registered");
         } catch (error) {
@@ -65,6 +90,8 @@ const WorkerRegistrationApp = () => {
             <input type="text" placeholder="Worker ID" onChange={(e) => setWorkerId(e.target.value)} />
             <input type="text" placeholder="Worker Name" onChange={(e) => setWorkerName(e.target.value)} />
             <input type="text" placeholder="Certification Type" onChange={(e) => setCertificationType(e.target.value)} />
+            <input type="file" onChange={(e) => setCertificateDocument(e.target.files[0])} />
+            <input type="date" placeholder="Certification Expiry" onChange={(e) => setCertificationExpiry(e.target.value)} />
             <input type="checkbox" onChange={(e) => setCertificationValid(e.target.checked)} /> Certification Valid
             <input type="checkbox" onChange={(e) => setTrainingCompleted(e.target.checked)} /> Training Completed
             <button onClick={registerWorker}>Register Worker</button>
