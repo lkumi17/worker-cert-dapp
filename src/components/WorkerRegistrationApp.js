@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import WorkerCertificationContract from '../contracts/WorkerCertification.json';
-import { create } from 'ipfs-http-client';
+import axios from 'axios'; // Use axios for Pinata API calls
 
 const WorkerRegistrationApp = () => {
     const [account, setAccount] = useState('');
@@ -11,20 +11,16 @@ const WorkerRegistrationApp = () => {
     const [certificationType, setCertificationType] = useState('');
     const [certificationValid, setCertificationValid] = useState(false);
     const [trainingCompleted, setTrainingCompleted] = useState(false);
-    const [certificateDocument, setCertificateDocument] = useState('');
+    const [certificateFile, setCertificateFile] = useState(null);
     const [certificationExpiry, setCertificationExpiry] = useState('');
     const [workerIdAuthorize, setWorkerIdAuthorize] = useState('');
     const [taskId, setTaskId] = useState('');
-    const [ipfs, setIpfs] = useState(null);
+
+    const PINATA_API_KEY = 'd3df458dc019258652fa';
+    const PINATA_SECRET_KEY = 'aa470e78a777eaa939153adce0618d26127a127eb8ca51a9833f69d30c0b01a4';
 
     useEffect(() => {
         loadBlockchainData();
-        const client = create({
-            host: 'ipfs.infura.io',
-            port: 5001,
-            protocol: 'https'
-        });
-        setIpfs(client);
     }, []);
 
     const loadBlockchainData = async () => {
@@ -34,34 +30,50 @@ const WorkerRegistrationApp = () => {
 
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = WorkerCertificationContract.networks[networkId];
-        const contractInstance = new web3.eth.Contract(
-            WorkerCertificationContract.abi,
-            deployedNetwork && deployedNetwork.address
-        );
-        setContract(contractInstance);
+        if (deployedNetwork) {
+            const contractInstance = new web3.eth.Contract(
+                WorkerCertificationContract.abi,
+                deployedNetwork.address
+            );
+            setContract(contractInstance);
+        } else {
+            alert("Smart contract not deployed to the current network");
+        }
     };
 
-    const uploadToIpfs = async (file) => {
+    const uploadToPinata = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
         try {
-            const added = await ipfs.add(file);
-            return `https://ipfs.infura.io/ipfs/${added.path}`;
+            const response = await axios.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    pinata_api_key: PINATA_API_KEY,
+                    pinata_secret_api_key: PINATA_SECRET_KEY,
+                },
+            });
+            const ipfsUrl = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
+            return ipfsUrl;
         } catch (error) {
-            console.error("Error uploading file to IPFS:", error);
+            console.error("Error uploading file to Pinata:", error);
             throw error;
         }
     };
 
     const registerWorker = async () => {
         try {
-            let certificateUrl = certificateDocument;
-            if (certificateDocument instanceof File) {
-                certificateUrl = await uploadToIpfs(certificateDocument);
+            let certificateUrl = '';
+            if (certificateFile) {
+                certificateUrl = await uploadToPinata(certificateFile);
             }
             const expiryTimestamp = Math.floor(new Date(certificationExpiry).getTime() / 1000);
+
             await contract.methods
                 .registerWorker(workerId, workerName, certificationType, certificationValid, trainingCompleted, certificateUrl, expiryTimestamp)
                 .send({ from: account, gas: 3000000 });
-            alert("Worker Registered");
+
+            alert("Worker Registered Successfully!");
         } catch (error) {
             console.error("Error registering worker:", error);
             alert("Error registering worker: " + error.message);
@@ -73,7 +85,7 @@ const WorkerRegistrationApp = () => {
             await contract.methods
                 .authorizeTask(workerIdAuthorize, taskId)
                 .send({ from: account, gas: 3000000 });
-            alert("Task Authorized");
+            alert("Task Authorized Successfully!");
         } catch (error) {
             console.error("Error authorizing task:", error);
             alert("Error authorizing task: " + error.message);
@@ -83,17 +95,21 @@ const WorkerRegistrationApp = () => {
     return (
         <div>
             <h2>Worker Registration and Authorization</h2>
-            <p>Account: {account}</p>
+            <p><strong>Connected Account:</strong> {account}</p>
 
             {/* Register Worker Section */}
             <h3>Register Worker</h3>
             <input type="text" placeholder="Worker ID" onChange={(e) => setWorkerId(e.target.value)} />
             <input type="text" placeholder="Worker Name" onChange={(e) => setWorkerName(e.target.value)} />
             <input type="text" placeholder="Certification Type" onChange={(e) => setCertificationType(e.target.value)} />
-            <input type="file" onChange={(e) => setCertificateDocument(e.target.files[0])} />
+            <input type="file" onChange={(e) => setCertificateFile(e.target.files[0])} />
             <input type="date" placeholder="Certification Expiry" onChange={(e) => setCertificationExpiry(e.target.value)} />
-            <input type="checkbox" onChange={(e) => setCertificationValid(e.target.checked)} /> Certification Valid
-            <input type="checkbox" onChange={(e) => setTrainingCompleted(e.target.checked)} /> Training Completed
+            <label>
+                <input type="checkbox" onChange={(e) => setCertificationValid(e.target.checked)} /> Certification Valid
+            </label>
+            <label>
+                <input type="checkbox" onChange={(e) => setTrainingCompleted(e.target.checked)} /> Training Completed
+            </label>
             <button onClick={registerWorker}>Register Worker</button>
 
             {/* Authorize Task Section */}
