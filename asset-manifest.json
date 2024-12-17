@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/worker-cert-dapp/static/css/main.649e980b.css",
-    "main.js": "/worker-cert-dapp/static/js/main.ce43b4c9.js",
-    "static/js/453.14138dd9.chunk.js": "/worker-cert-dapp/static/js/453.14138dd9.chunk.js",
+    "main.js": "/worker-cert-dapp/static/js/main.9459eae3.js",
+    "static/js/453.a0737061.chunk.js": "/worker-cert-dapp/static/js/453.a0737061.chunk.js",
     "index.html": "/worker-cert-dapp/index.html",
     "main.649e980b.css.map": "/worker-cert-dapp/static/css/main.649e980b.css.map",
-    "main.ce43b4c9.js.map": "/worker-cert-dapp/static/js/main.ce43b4c9.js.map",
-    "453.14138dd9.chunk.js.map": "/worker-cert-dapp/static/js/453.14138dd9.chunk.js.map"
+    "main.9459eae3.js.map": "/worker-cert-dapp/static/js/main.9459eae3.js.map",
+    "453.a0737061.chunk.js.map": "/worker-cert-dapp/static/js/453.a0737061.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.649e980b.css",
-    "static/js/main.ce43b4c9.js"
+    "static/js/main.9459eae3.js"
   ]
 }
