@@ -25,7 +25,7 @@ const CertificationCheckApp = () => {
             setAccount(accounts[0]);
 
             // Hardcoded contract address for testing
-            const hardcodedAddress = "0xc85B2420B9Afd04a406d0d1AD39d3d1Ad7E9E78F"; // Replace with your deployed contract address
+            const hardcodedAddress = "0xBc5E3CCb2aDa5E8A73C4EE47945eE6F124e8D578"; // Replace with your deployed contract address
 
             const contractInstance = new web3.eth.Contract(
                 WorkerCertificationContract.abi,
